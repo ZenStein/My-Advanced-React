@@ -4,5 +4,12 @@
     "titleBar.inactiveForeground": "#000000CC",
     "titleBar.activeBackground": "#FFC600",
     "titleBar.inactiveBackground": "#FFC600CC"
+  },
+  "eslint.alwaysShowStatus": true,
+  "eslint.run": "onSave",
+  "eslint.autoFixOnSave": true,
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.formatOnSave": false
   }
 }

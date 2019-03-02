@@ -7,9 +7,8 @@
   },
   "eslint.alwaysShowStatus": true,
   "eslint.run": "onSave",
-  "eslint.autoFixOnSave": true,
-  "editor.formatOnSave": true,
+  "eslint.autoFixOnSave": false,
   "[javascript]": {
-    "editor.formatOnSave": false
+    "editor.formatOnSave": true
   }
 }

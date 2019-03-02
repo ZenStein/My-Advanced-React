@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Mutation } from "react-apollo";
 import gql from "graphql-tag";
+import Router from "next/router";
 import Form from "./styles/Form";
 // import formatMoney from "../lib/formatMoney"
 import Error from "./ErrorMessage";
@@ -10,8 +11,8 @@ const CREATE_ITEM_MUTATION = gql`
     $title: String!
     $description: String!
     $price: Int!
-    $image: String
-    $largeImage: String
+    $image: String!
+    $largeImage: String!
   ) {
     createItem(
       title: $title
@@ -35,9 +36,32 @@ class CreateItem extends Component {
   };
 
   handleChange = e => {
+    console.log(this.state);
     const { name, type, value } = e.target;
     const val = type === "number" ? parseFloat(value) : value;
     this.setState({ [name]: val });
+  };
+
+  uploadFile = async e => {
+    const { files } = e.target;
+    const data = new FormData();
+    data.append("file", files[0]);
+    data.append("upload_preset", "sickfits");
+    console.log("here is II", data, files);
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/all-in-tech/image/upload",
+      {
+        method: "POST",
+        body: data
+      }
+    );
+    // console.log("res", res);
+    const file = await res.json();
+    console.log("file:", file);
+    this.setState({
+      image: file.secure_url,
+      largeImage: file.eager[0].secure_url
+    });
   };
 
   render() {
@@ -46,14 +70,29 @@ class CreateItem extends Component {
       <Mutation mutation={CREATE_ITEM_MUTATION} variables={this.state}>
         {(createItem, { loading, error }) => (
           <Form
-            onSubmit={e => {
+            onSubmit={async e => {
               e.preventDefault();
-              console.log("testert")
-              console.log(this.state);
+              const res = await createItem();
+              Router.push({
+                pathname: "/item",
+                query: { id: res.data.createItem.id }
+              });
             }}
           >
             <Error error={error} />
             <fieldset disabled={loading} aria-busy={loading}>
+              <label htmlFor="file">
+                Image
+                <input
+                  type="file"
+                  id="file"
+                  name="file"
+                  placeholder="Title"
+                  onChange={this.uploadFile}
+                  required
+                />
+                {image && <img src={image} alt="Upload" />}
+              </label>
               <label htmlFor="title">
                 Title
                 <input
